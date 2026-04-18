@@ -104,7 +104,7 @@ app.get('/', (req: Request, res: Response) => {
   });
 });
 
-app.get('/api/getUserInfo', (req: Request, res: Response) => {
+app.get('/api/getUserInfo', async (req: Request, res: Response) => {
   try {
     const urlObj = url.parse(req.url, true).query;
     const token = urlObj.token as string;
@@ -113,14 +113,22 @@ app.get('/api/getUserInfo', (req: Request, res: Response) => {
       res.status(400).json({ error: 'Token is required' });
       return;
     }
-
-    // console.log('Token:', token);
-    const user = sdk.parseJwtToken(token);
-    // console.log('User:', user);
-    res.json(user);
+    const parsedUser = sdk.parseJwtToken(token);
+    if (!parsedUser || typeof parsedUser !== 'object' || !parsedUser.id) {
+      res.status(401).json({ error: 'Invalid token' });
+      return;
+    }
+    // Validate token with Casdoor server
+    const user = await sdk.getUser(parsedUser.id);
+    if (!user) {
+      res.status(401).json({ error: 'Invalid or expired token' });
+      return;
+    }
+    console.log('User info retrieved:', parsedUser);
+    res.json(parsedUser);
   } catch (error) {
-    console.error('Error parsing JWT:', error);
-    res.status(401).json({ error: (error as Error).message });
+    console.error('Error validating token:', error);
+    res.status(401).json({ error: error instanceof Error ? error.message : String(error) });
   }
 });
 

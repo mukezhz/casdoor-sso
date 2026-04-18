@@ -35,29 +35,37 @@ export function HomePage() {
     loadUser();
   }, []);
 
-  // Check token validity when page becomes visible
+  // Check token validity when page becomes visible or periodically
   useEffect(() => {
-    const handleVisibilityChange = async () => {
-      if (globalThis.document.visibilityState === 'visible') {
-        console.log("[Auth] Page became visible, checking token validity");
-        const token = getStoredToken();
-        if (token) {
-          try {
-            await fetchUserInfo(token);
-            // Token is still valid
-          } catch (error) {
-            console.log("[Auth] Token is no longer valid, clearing local state");
-            clearToken();
-            setIsLoggedIn(false);
-            setUsername("");
-          }
+    const checkToken = async () => {
+      const token = getStoredToken();
+      if (token) {
+        try {
+          await fetchUserInfo(token);
+          // Token is still valid
+        } catch (error) {
+          console.log("[Auth] Token is no longer valid, clearing local state");
+          clearToken();
+          setIsLoggedIn(false);
+          setUsername("");
         }
       }
     };
 
+    const handleVisibilityChange = () => {
+      if (globalThis.document.visibilityState === 'visible') {
+        checkToken();
+      }
+    };
+
+    // Check on visibility change
     globalThis.document.addEventListener('visibilitychange', handleVisibilityChange);
+    // Periodic check every 60 seconds
+    const intervalId = setInterval(checkToken, 6000);
+
     return () => {
       globalThis.document.removeEventListener('visibilitychange', handleVisibilityChange);
+      clearInterval(intervalId);
     };
   }, []);
 

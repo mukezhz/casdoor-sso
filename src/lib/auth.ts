@@ -29,6 +29,10 @@ export interface UserInfo {
 
 export async function fetchUserInfo(token: string): Promise<UserInfo> {
   const response = await fetch(`http://localhost:8080/api/getUserInfo?token=${encodeURIComponent(token)}`);
+  if (!response.ok) {
+    // Throw on 401 or any error
+    throw new Error(`Failed to fetch user info: ${response.status}`);
+  }
   return response.json() as Promise<UserInfo>;
 }
 
@@ -49,6 +53,7 @@ export async function exchangeCodeForToken(): Promise<string | null> {
 
   const sdk = getSdk();
   const result = await sdk.signin("http://localhost:8080");
+  // @ts-expect-error
   const token = (result?.token as string | undefined) ?? null;
 
   if (token) {
