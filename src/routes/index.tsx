@@ -33,6 +33,32 @@ export function HomePage() {
     loadUser();
   }, []);
 
+  // Check token validity when page becomes visible
+  useEffect(() => {
+    const handleVisibilityChange = async () => {
+      if (globalThis.document.visibilityState === 'visible') {
+        console.log("[Auth] Page became visible, checking token validity");
+        const token = getStoredToken();
+        if (token) {
+          try {
+            await fetchUserInfo(token);
+            // Token is still valid
+          } catch (error) {
+            console.log("[Auth] Token is no longer valid, clearing local state");
+            clearToken();
+            setIsLoggedIn(false);
+            setUsername("");
+          }
+        }
+      }
+    };
+
+    globalThis.document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      globalThis.document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
+
   // Handle silent signin when parameter is present
   useEffect(() => {
     const attemptSilentSignin = async () => {
@@ -43,22 +69,9 @@ export function HomePage() {
         const sdk = getSdk();
         
         try {
-          const result = await sdk.popupSignin("http://localhost:8080");
-          console.log("[Auth] Popup signin result:", result);
-          
-          // Check if token was stored
-          const token = getStoredToken();
-          if (token) {
-            const user = await fetchUserInfo(token);
-            setUsername(user.name ?? "");
-            setIsLoggedIn(true);
-            setStatusMessage("Auto signed in successfully");
-            
-            // Remove silentSignin parameter from URL
-            globalThis.history.replaceState({}, "", "/");
-          } else {
-            setStatusMessage("Auto sign-in failed - no token received");
-          }
+          // For silent signin, use redirect flow instead of popup
+          // User is already logged into Casdoor, so this will redirect back with a code
+          globalThis.location.href = sdk.getSigninUrl();
         } catch (error) {
           console.error("[Auth] Silent signin failed:", error);
           setStatusMessage("Auto sign-in failed");
