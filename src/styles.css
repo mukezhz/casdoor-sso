@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+:root {
+  --primary: #0f62fe;
+  --primary-hover: #0043ce;
+  --text-muted: #61708a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: "Inter", "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.page-shell {
+  @apply w-full min-h-screen flex items-center justify-center p-6;
+}
+
+.auth-card {
+  @apply w-full max-w-sm bg-white border border-gray-300 rounded-2xl shadow-lg p-7 space-y-4;
+}
+
+.auth-title {
+  @apply text-2xl font-bold text-gray-900 m-0;
+}
+
+.auth-subtitle {
+  @apply text-gray-600 m-0 text-sm;
+}
+
+.auth-result {
+  @apply text-sm font-semibold text-gray-900 m-0;
+}
+
+.username {
+  @apply text-blue-600 font-semibold;
+}
+
+.auth-actions {
+  @apply flex flex-col gap-2.5;
+}
+
+.login-select,
+.auth-btn {
+  @apply w-full min-h-11 rounded-xl text-sm;
+}
+
+.login-select {
+  @apply border border-gray-400 bg-white text-gray-900 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500;
+}
+
+.auth-btn {
+  @apply border-none bg-blue-600 text-white font-bold cursor-pointer transition-colors hover:bg-blue-700 active:bg-blue-800;
+}
+
+.auth-btn:disabled {
+  @apply opacity-50 cursor-not-allowed;
+}
+
+.auth-btn:hover {
+  background: var(--primary-hover);
+}

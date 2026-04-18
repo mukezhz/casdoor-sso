@@ -1,0 +1,37 @@
+services:
+  db:
+    image: mysql:8.4.6
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-pass}
+      MYSQL_DATABASE: insurance_db
+    ports:
+      - "13306:3306"
+    volumes:
+      - ./db_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+  casdoor:
+    image: casbin/casdoor:3.26.0
+    environment:
+      driverName: mysql
+      dataSourceName: root:pass@tcp(db:3306)/
+      dbName: casdoor
+    ports:
+      - "18000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: on-failure
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    command: >
+      sh -c "sleep 1 && /casdoor/server"
