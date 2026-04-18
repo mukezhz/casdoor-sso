@@ -12,15 +12,15 @@ export function getSdk(): SDK {
 }
 
 export function getStoredToken(): string | null {
-  return localStorage.getItem("token");
+  return sessionStorage.getItem("token");
 }
 
 export function storeToken(token: string): void {
-  localStorage.setItem("token", token);
+  sessionStorage.setItem("token", token);
 }
 
 export function clearToken(): void {
-  localStorage.removeItem("token");
+  sessionStorage.removeItem("token");
 }
 
 export interface UserInfo {

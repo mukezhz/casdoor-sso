@@ -1,25 +1,26 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { clearToken, fetchUserInfo, getSdk, getStoredToken, hasSilentSigninParam } from "../lib/auth";
-import { useState, useEffect, useCallback } from "react";
+import { clearToken, fetchUserInfo, getSdk, getStoredToken, hasSilentSigninParam, hasAuthCodeInUrl, exchangeCodeForToken } from "../lib/auth";
+import { useState, useEffect, useCallback, useRef } from "react";
 
 export function HomePage() {
   const [username, setUsername] = useState<string>("");
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const [loginMethod, setLoginMethod] = useState<"signin" | "popupSignin">("signin");
   const [statusMessage, setStatusMessage] = useState<string>("Idle");
+  const silentSigninAttemptedRef = useRef(false);
 
   // Load existing token on mount
   useEffect(() => {
-    console.log("[Auth] Checking for existing token and loading user info");
     const loadUser = async (): Promise<void> => {
       try {
         const token = getStoredToken();
         if (!token) {
           setIsLoggedIn(false);
           setUsername("");
+          setLoading(false);
           return;
         }
-
         const user = await fetchUserInfo(token);
         setUsername(user.name ?? "");
         setIsLoggedIn(true);
@@ -27,9 +28,10 @@ export function HomePage() {
         clearToken();
         setIsLoggedIn(false);
         setUsername("");
+      } finally {
+        setLoading(false);
       }
     };
-
     loadUser();
   }, []);
 
@@ -59,28 +61,49 @@ export function HomePage() {
     };
   }, []);
 
-  // Handle silent signin when parameter is present
+  // Handle silent signin and code exchange (run only after initial token check)
   useEffect(() => {
-    const attemptSilentSignin = async () => {
-      if (hasSilentSigninParam() && !isLoggedIn) {
-        console.log("[Auth] Silent sign-in parameter detected, triggering auto sign-in");
-        setStatusMessage("Auto signing in...");
-        
-        const sdk = getSdk();
-        
+    if (loading || isLoggedIn) return;
+    let cancelled = false;
+    const handleAuthFlow = async () => {
+      // If auth code is present in URL, exchange it for token
+      if (hasAuthCodeInUrl()) {
+        setStatusMessage("Completing sign-in...");
         try {
-          // For silent signin, use redirect flow instead of popup
-          // User is already logged into Casdoor, so this will redirect back with a code
+          const token = await exchangeCodeForToken();
+          if (token && !cancelled) {
+            const user = await fetchUserInfo(token);
+            setUsername(user.name ?? "");
+            setIsLoggedIn(true);
+            globalThis.history.replaceState({}, "", "/");
+            setStatusMessage("Signed in successfully");
+          }
+        } catch (error) {
+          if (!cancelled) {
+            setStatusMessage("Sign-in failed");
+          }
+        }
+        return;
+      }
+
+      // Only attempt silent signin once per session
+      if (silentSigninAttemptedRef.current) return;
+
+      if (hasSilentSigninParam() || !silentSigninAttemptedRef.current) {
+        silentSigninAttemptedRef.current = true;
+        setStatusMessage("Auto signing in...");
+        const sdk = getSdk();
+        try {
           globalThis.location.href = sdk.getSigninUrl();
         } catch (error) {
-          console.error("[Auth] Silent signin failed:", error);
-          setStatusMessage("Auto sign-in failed");
+          if (!cancelled) setStatusMessage("Auto sign-in failed");
+          silentSigninAttemptedRef.current = false;
         }
       }
     };
-
-    attemptSilentSignin();
-  }, [isLoggedIn]);
+    handleAuthFlow();
+    return () => { cancelled = true; };
+  }, [loading, isLoggedIn]);
 
   const gotoSignInPage = useCallback((event: React.MouseEvent<HTMLButtonElement>): void => {
     event.preventDefault();
