@@ -1,10 +1,11 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { exchangeCodeForToken, hasAuthCodeInUrl } from "../lib/auth";
 
 function CallbackPage() {
   const navigate = useNavigate({ from: "/callback" });
   const handledRef = useRef(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (handledRef.current) {
@@ -24,9 +25,27 @@ function CallbackPage() {
     };
 
     completeSignIn().catch(() => {
-      navigate({ to: "/" });
+      setError("Sign-in failed. The backend may be unavailable.");
     });
   }, [navigate]);
+
+  if (error) {
+    return (
+      <section className="auth-card">
+        <h1 className="auth-title">Sign-in Failed</h1>
+        <p className="auth-subtitle">{error}</p>
+        <div className="auth-actions">
+          <button
+            type="button"
+            className="auth-btn"
+            onClick={() => navigate({ to: "/" })}
+          >
+            Return home
+          </button>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="auth-card">

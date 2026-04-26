@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { clearToken, fetchUserInfo, getSdk, getStoredToken, hasSilentSigninParam, hasAuthCodeInUrl, exchangeCodeForToken } from "../lib/auth";
+import { clearToken, fetchUserInfo, getSdk, getStoredToken, hasSilentSigninParam, hasAuthCodeInUrl, exchangeCodeForToken, AuthError } from "../lib/auth";
 import { useState, useEffect, useCallback, useRef } from "react";
 
 export function HomePage() {
@@ -44,10 +44,16 @@ export function HomePage() {
           await fetchUserInfo(token);
           // Token is still valid
         } catch (error) {
-          console.log("[Auth] Token is no longer valid, clearing local state");
-          clearToken();
-          setIsLoggedIn(false);
-          setUsername("");
+          if (error instanceof AuthError) {
+            console.log("[Auth] Token is no longer valid, clearing local state");
+            clearToken();
+            setIsLoggedIn(false);
+            setUsername("");
+          } else {
+            // Network error — backend is down, keep session state and show message
+            console.log("[Auth] Backend unavailable, keeping session state");
+            setStatusMessage("Backend unavailable. Will retry...");
+          }
         }
       }
     };

@@ -27,10 +27,19 @@ export interface UserInfo {
   name?: string;
 }
 
+export class AuthError extends Error {
+  constructor(public readonly status: number, message: string) {
+    super(message);
+    this.name = "AuthError";
+  }
+}
+
 export async function fetchUserInfo(token: string): Promise<UserInfo> {
   const response = await fetch(`http://localhost:8080/api/getUserInfo?token=${encodeURIComponent(token)}`);
   if (!response.ok) {
-    // Throw on 401 or any error
+    if (response.status === 401) {
+      throw new AuthError(401, "Unauthorized");
+    }
     throw new Error(`Failed to fetch user info: ${response.status}`);
   }
   return response.json() as Promise<UserInfo>;
