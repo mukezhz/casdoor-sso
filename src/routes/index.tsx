@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { clearToken, fetchUserInfo, getSdk, getStoredToken, hasSilentSigninParam, hasAuthCodeInUrl, exchangeCodeForToken, AuthError } from "../lib/auth";
 import { useState, useEffect, useCallback, useRef } from "react";
+import { serverUrl } from "../config/casdoor";
 
 export function HomePage() {
   const [username, setUsername] = useState<string>("");
@@ -134,7 +135,7 @@ export function HomePage() {
         return;
       }
 
-      sdk.popupSignin("http://localhost:8080");
+      sdk.popupSignin(serverUrl);
       setStatusMessage("Popup sign-in requested");
     } catch (error) {
       console.error("[Auth] Sign-in start failed", error);
@@ -152,7 +153,7 @@ export function HomePage() {
         }
 
         // Call backend logout endpoint
-        const response = await fetch(`http://localhost:8080/api/logout?token=${encodeURIComponent(token)}`, {
+        const response = await fetch(`${serverUrl}/api/logout?token=${encodeURIComponent(token)}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'

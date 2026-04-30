@@ -1,5 +1,5 @@
 import SDK from "casdoor-js-sdk";
-import { casdoorConfig } from "../config/casdoor";
+import { casdoorConfig, serverUrl } from "../config/casdoor";
 
 let sdkInstance: SDK | null = null;
 
@@ -35,7 +35,13 @@ export class AuthError extends Error {
 }
 
 export async function fetchUserInfo(token: string): Promise<UserInfo> {
-  const response = await fetch(`http://localhost:8080/api/getUserInfo?token=${encodeURIComponent(token)}`);
+  const response = await fetch(`${serverUrl}/api/getUserInfo`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json"
+    }
+  });
   if (!response.ok) {
     if (response.status === 401) {
       throw new AuthError(401, "Unauthorized");
@@ -61,7 +67,7 @@ export async function exchangeCodeForToken(): Promise<string | null> {
   }
 
   const sdk = getSdk();
-  const result = await sdk.signin("http://localhost:8080");
+  const result = await sdk.signin(serverUrl);
   // @ts-expect-error
   const token = (result?.token as string | undefined) ?? null;
 

@@ -1,3 +1,6 @@
+export const casdoorUrl = "https://accounts.localhost";
+export const serverUrl = "https://api.localhost";
+
 export interface CasdoorConfig {
   serverUrl: string;
   clientId: string;
@@ -7,8 +10,8 @@ export interface CasdoorConfig {
 }
 
 export const casdoorConfig: CasdoorConfig = {
-  serverUrl: "http://localhost:18000",
-  clientId: "337836a39ecb98df69ac",
+  serverUrl: casdoorUrl,
+  clientId: "5b4008e5315cbc48fa51",
   organizationName: "astergaze",
   appName: "asterconsult",
   redirectPath: "/callback",

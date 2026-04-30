@@ -1,0 +1,17 @@
+accounts.localhost {
+
+
+    reverse_proxy localhost:18000
+}
+
+app.localhost {
+    reverse_proxy localhost:5173
+}
+
+bidhyarthi.localhost {
+    reverse_proxy localhost:5173
+}
+
+api.localhost {
+    reverse_proxy localhost:8080
+}

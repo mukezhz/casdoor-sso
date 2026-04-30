@@ -25,38 +25,39 @@ const __dirname = path.dirname(__filename);
 
 // init sdk
 const cert = `-----BEGIN CERTIFICATE-----
-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
+MIIE3zCCAsegAwIBAgIDAeJAMA0GCSqGSIb3DQEBCwUAMCkxETAPBgNVBAoTCGFz
+dGVyZ2FlMRQwEgYDVQQDDAtjZXJ0X2lyeGg4cDAeFw0yNjA0MjkwNTM2MzhaFw00
+NjA0MjkwNTM2MzhaMCkxETAPBgNVBAoTCGFzdGVyZ2FlMRQwEgYDVQQDDAtjZXJ0
+X2lyeGg4cDCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBALyR72BuAWFC
+4Ub7Al6uTSbALO6iKLNbq0z4KsC7iz9jExuxf9OGA7It/8rfDkzKCZzik0So9x5h
+f6HVB7MZwUgl296vNr/oHxTnvM/ghxse7NZBxfcND6VPQhMch9ne48lZiJ+VO0sz
+cFWbcUXRqrszbxZkqVLfJ9sroC0oaPGuR1Ji8rDGOW5aneFofb2cEL9Tk2s+ijJE
+N20eqqNpFVDkcbtl9FWZNQkp8gLkDvBUR2m7VE2+6uKpDHpce6zyFUWZFHS3KyFp
+XQfgJcSy/2xFPXAP6/+Ndatd4l5dhCvzG8O6xpvTPzTOitlgoXBw4mO2cny93etm
+uFFAQ3GxhIJKRl3JW5hjSqOMq2iK748/FKqaPDM9b2GCQx54mBU8tPJR5e3d45gJ
+JRBoTWFsAWqGnZZ7UyDjvzMDnr02X20gw8frsFPTESCGBFtQBQYwVV7VORPG1hp6
+3ccASketkhiisGAJ0daAjg7F5VMKx2SM35zgS3Pv+eciNUTyDdQ+nIzu+/HY4kDA
+9zmHGHEuyMn1nGFt6kmG13QOR4IDxrtUUGCQkTi4Nrx26Z4K+hO9nunWCEI2CAGq
+2EAhhJBHVa1zmVEhf9oD+0bJsAYljb3D/udyRUmsacbKUaBLR6f9/HRiNgqsmvRL
+uosQleEM3qU+S2eAUAW11TeAZm60CmLXAgMBAAGjEDAOMAwGA1UdEwEB/wQCMAAw
+DQYJKoZIhvcNAQELBQADggIBAAYWZzCJjGp7fBFmzMcmRhHQeHl6cN/VjgrKlAFT
+f1FupiAUwOWxzsoDlUZVLa+MfGa8TE/rojM+GT+E42S3TtJHfQd+5sdIOy4VTSYN
+Cq7dbdpSrcXj8NjvD+PWLQa8AK9yRv2Sk7zl0N+hoY5acJse5ywL2mNibVfmzHzA
+Oz6+tP7LafRX3jkYs1wQE1cpg5RFV+mYEyISye8I5xsyk3p6i7sTDVd4iaMXVCm+
+sDmlekJu1dFPhl/hF29PSEmmG1MA2e8rKBNHuLmccXHFQ6HQsGNLfxURm3Jfzuqz
+MROt5zLFQtevf2cmZE+D3UN6vonkdV343VaUDCk1iV+uUfuPSFGV5wVRwv71IHCm
+0Y+bvN+kFtae5pAmxSZDuKnCpbD+EWauXlsVqlKT64F9v9vQCY/syMGirnNLWczt
+GwYf4ndfFpZskoudvbu6yfYpwFeWH940ffsoVqYwfH3J65+F0Y9f7f6o8GNUZv4R
+p0zGr7ZJrIjyhHdalyYSsIT+uyAIcCZhZpCRQwBaDOmt5VpCRC9jmBvhUDQo5trx
+MkV1cdFjm9/FiXLboqa4f54ynDu7EYvvT5AU2SO6TPNrjujHq3L3md/4ueAM/Gp6
+6LNzBvflIAfXDKS/rgMMh6uW0ZpdMpb9A9/PZeriqcQkG/jlWzJ7DsX5K/JtimNU
+V0Gi
 -----END CERTIFICATE-----`;
 
 const authCfg = {
   endpoint: 'http://localhost:18000',
-  clientId: '337836a39ecb98df69ac',
-  clientSecret: '83dfa9c41a9a23f5af0172caef622bc13266a526',
+  clientId: '5b4008e5315cbc48fa51',
+  clientSecret: '00372812237a9d10471916ec16537947f5e99ce8',
   certificate: cert,
   orgName: 'astergaze',
   appName: 'asterconsult',
@@ -75,7 +76,7 @@ const app: Express = express();
 
 // CORS configuration
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:5174'],
+  origin: ['http://localhost:5173', 'http://localhost:5174', "https://app.localhost", "https://bidhyarthi.localhost" ],
   methods: ['GET', 'POST', 'OPTIONS'],
   credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -83,7 +84,7 @@ app.use(cors({
 
 // Handle preflight requests
 app.options('*', cors({
-  origin: ['http://localhost:5173', 'http://localhost:5174'],
+  origin: ['http://localhost:5173', 'http://localhost:5174', "https://app.localhost", "https://bidhyarthi.localhost" ],
   methods: ['GET', 'POST', 'OPTIONS'],
   credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -104,11 +105,10 @@ app.get('/', (req: Request, res: Response) => {
   });
 });
 
-app.get('/api/getUserInfo', async (req: Request, res: Response) => {
+app.post('/api/getUserInfo', async (req: Request, res: Response) => {
+  const authHeader = req.get('Authorization')
+  const token = authHeader?.split(' ')[1]; // Extract token from "Bearer <token>"
   try {
-    const urlObj = url.parse(req.url, true).query;
-    const token = urlObj.token as string;
-
     if (!token) {
       res.status(400).json({ error: 'Token is required' });
       return;
